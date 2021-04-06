@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+ 
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendor/bootstrap/css/bootstrap.min.css') }}">
+    <link href="{{ url_for('static', filename='assets/vendor/fonts/circular-std/style.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/libs/css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendor/fonts/fontawesome/css/fontawesome-all.css') }}">
+    <title>Financial Analysis</title>
+</head>
+
+<body>
+    <!-- ============================================================== -->
+    <!-- main wrapper -->
+    <!-- ============================================================== -->
+    <div class="dashboard-main-wrapper">
+        <!-- ============================================================== -->
+        <!-- navbar -->
+        <!-- ============================================================== -->
+        <div class="dashboard-header">
+            <nav class="navbar navbar-expand-lg bg-white fixed-top">
+                <a class="navbar-brand" href="{{ url_for('index')}}" style="color:#1E3269">Financial Analysis</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end navbar -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- wrapper  -->
+        <!-- ============================================================== -->
+        <div class="dashboard-wrapper">
+            <div class="dashboard-ecommerce">
+                <div class="container-fluid dashboard-content ">
+                    <!-- ============================================================== -->
+                    <!-- pageheader  -->
+                    <!-- ============================================================== -->
+
+                        <div class="row text-center">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <h2><strong>{{corp_name}} 주요재무지표 분석</strong></h2>
+                            </div>
+                        </div>
+
+                    <div class="row" style="margin-bottom: 20px">
+                        <div style="margin: 0 auto; text-align: center;">
+                            <a href="{{url_for('stock', code=CODE) }}" class="btn btn-rounded btn-dark">주요주가지표</a>
+                            <a href="{{url_for('statements', code=CODE) }}" class="btn btn-rounded btn-dark">주요재무지표</a>
+                            <a href="{{url_for('ratio', code=CODE) }}" class="btn btn-rounded btn-dark">주요재무비율</a>
+                        </div>
+                   </div>
+                    <!-- ============================================================== -->
+                    <!-- end pageheader  -->
+                    <!-- ============================================================== -->
+                        <div class="row text-center">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="card" id="main_chart">
+                                    <h5 class="card-header"><strong>포괄손익계산서</strong></h5>
+                                    <div class="card-body">
+                                        <div class="box_chart text-center">
+                                        <canvas id="chartjs_balance_bar"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="card">
+                                    <h5 class="card-header text-center"><strong>포괄손익계산서(단위:억 원)</strong></h5>
+                                    <div class="card-body">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+<!--                                                    <i class="fas fa-question-circle" ></i>-->
+                                                    <th scope="col">항목
+                                                    <i id="modalBtn3" class="fas fa-question-circle"></i>
+                                              <!-- 회원가입 확인 Modal-->
+                                                    <div class="modal fade" id="Modal3" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="opacity:95%">
+                                                        <div class="modal-dialog modal-dialog-centered" style="max-width: 100%; width: auto; display: table" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-body" style="margin:15px">
+                                                                    <h4>포괄손익계산서</h4>
+                                                                    <p>
+                                                                    매출액 = 가격 X 수량 / 상품 판매, 용역의 제공을 통해 실현된 금액<br>
+                                                                    영업이익 = 매출액 - 매출원가 - 판매비와관리비 / 순수하게 영업을 통해 벌어들인 이익<br>
+                                                                    당기순이익 = 영업이익 + 영업외수익 - 영업외비용 / 일정기간동안 실제 기업이 벌어들인 순이익<br>
+                                                                    </p>
+                                                                    <button class="btn btn-rounded btn-secondary" type="button" data-dismiss="modal" style="float:right">닫기</button>
+                                                                    </div>
+                                                                </div>
+                                                        </div>
+                                                    </div>
+                                                    </th>
+                                                    <th scope="col">2016</th>
+                                                    <th scope="col">2017</th>
+                                                    <th scope="col">2018</th>
+                                                    <th scope="col">2019</th>
+                                                    <th scope="col">2020</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">매출액</th>
+                                                        {% for t in TAKE %}
+                                                            <td>{{t}}</td>
+                                                        {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">영업이익</th>
+                                                        {% for op in OP %}
+                                                            <td>{{op}}</td>
+                                                        {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">당기순이익</th>
+                                                        {% for ni in NI %}
+                                                            <td>{{ni}}</td>
+                                                        {% endfor %}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                                <div class="card">
+                                    <h5 class="card-header"><strong>재무상태표(대차대조표)</strong></h5>
+                                    <div class="card-body">
+                                        <canvas id="chartjs_bar2"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                                <div class="card">
+                                    <h5 class="card-header"><strong>현금흐름표</strong></h5>
+                                    <div class="card-body">
+                                        <canvas id="chartjs_bar3"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div class="card">
+                                    <h5 class="card-header text-center"><strong>재무상태표, 현금흐름표 (단위:억 원)</strong></h5>
+                                    <div class="card-body">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">항목
+                                                    <i id="modalBtn4" class="fas fa-question-circle"></i>
+                                              <!-- 회원가입 확인 Modal-->
+                                                    <div class="modal fade" id="Modal4" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="opacity:95%">
+                                                        <div class="modal-dialog modal-dialog-centered" style="max-width: 100%; width: auto; display: table" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-body" style="margin:15px">
+                                                                    <h4>재무상태표, 현금흐름표</h4>
+                                                                    <p>
+                                                                    자산총계 = 부채총계 + 자본총계 / 재산의 합계<br>
+                                                                    부채총계 = 빚의 합계, 타인자본<br>
+                                                                    자본총계 = 주주들에게 떨어지는 돈의 합계, 자기자본<br>
+                                                                    현금흐름 = 현금유입 - 현금유출<br>
+                                                                    영업활동 현금흐름 = 영업이 +값이라면 물건이나 서비스를 판매해서 돈을 얻는다는 것이며 -값이면 판매로 인해 오히려 손실이 난다는 뜻<br>
+                                                                    투자활동 현금흐름 = 투자가 +값이면 생산장비나 시설부지 등의 자산을 갖다 팔아서 자금을 충당하는 것이며 -값이면 생산시설을 늘리고 유지보수하는 데에 자금을 쓰고 있다는 뜻<br>
+                                                                    재무활동 현금흐름 = 재무가 +값이면 모자라는 자금을 은행에서 대출받았거나 새로운 투자를 하기 위해 은행에서 대출을 받았다는 뜻이며 -값이면 은행빚을 갚거나 주주에게 배당투자를 했다는 뜻
+                                                                    </p>
+                                                                    <button class="btn btn-rounded btn-secondary" type="button" data-dismiss="modal" style="float:right">닫기</button>
+                                                                    </div>
+                                                                </div>
+                                                        </div>
+                                                    </div>
+                                                    </th>
+                                                    <th scope="col">2016</th>
+                                                    <th scope="col">2017</th>
+                                                    <th scope="col">2018</th>
+                                                    <th scope="col">2019</th>
+                                                    <th scope="col">2020</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">자산총계</th>
+                                                        {% for ta in TA %}
+                                                            <td>{{ta}}</td>
+                                                        {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">부채총계</th>
+                                                        {% for tl in TL %}
+                                                            <td>{{tl}}</td>
+                                                        {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">자본총계</th>
+                                                        {% for te in TE %}
+                                                            <td>{{te}}</td>
+                                                        {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">영업활동 현금흐름</th>
+                                                        {% for cfo in CFO %}
+                                                            <td>{{cfo}}</td>
+                                                        {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">투자활동 현금흐름</th>
+                                                        {% for cfi in CFI %}
+                                                            <td>{{cfi}}</td>
+                                                        {% endfor %}
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">재무활동 현금흐름</th>
+                                                        {% for cff in CFF %}
+                                                            <td>{{cff}}</td>
+                                                        {% endfor %}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end wrapper  -->
+        <!-- ============================================================== -->
+
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            <div class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                            Copyright © 2021 Subin Sujeong Hyesu
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- end footer -->
+            <!-- ============================================================== -->
+
+    </div>
+    <!-- ============================================================== -->
+    <!-- end main wrapper  -->
+    <!-- ============================================================== -->
+    <!-- Optional JavaScript -->
+    <script src="{{ url_for('static', filename='assets/vendor/jquery/jquery-3.3.1.min.js') }}"></script>
+    <!-- sparkline js -->
+    <script src="{{ url_for('static', filename='assets/vendor/charts/sparkline/jquery.sparkline.js') }}"></script>
+    <!-- chart chart js -->
+    <script src="{{ url_for('static', filename='assets/vendor/charts/charts-bundle/Chart.bundle.js') }}"></script>
+    <script>
+        var TAKE = {{TAKE|tojson}}
+        var OPERATING_PROFIT = {{OP|tojson}}
+        var NET_INCOME = {{NI|tojson}}
+        var TOTAL_ASSETS = {{TA|tojson}}
+        var TOTAL_LIABILITIES = {{TL|tojson}}
+        var TOTAL_EQUITY = {{TE|tojson}}
+        var CF_OPERATING = {{CFO|tojson}}
+        var CF_INVESTING = {{CFI|tojson}}
+        var CF_FINANCING = {{CFF|tojson}}
+    </script>
+    <script src="{{ url_for('static', filename='assets/libs/js/dashboard-ecommerce.js') }}"></script>
+    <script>
+        var stock_3m_date = {% autoescape off %} {{stock['3m'][0]}} {% endautoescape %}
+        var stock_3m_prices = {{stock['3m'][1]}}
+        var stock_6m_date = {% autoescape off %} {{stock['6m'][0]}} {% endautoescape %}
+        var stock_6m_prices = {{stock['6m'][1]}}
+        var stock_1y_date = {% autoescape off %} {{stock['1y'][0]}} {% endautoescape %}
+        var stock_1y_prices = {{stock['1y'][1]}}
+        var stock_3y_date = {% autoescape off %} {{stock['3y'][0]}} {% endautoescape %}
+        var stock_3y_prices = {{stock['3y'][1]}}
+        var stock_5y_date = {% autoescape off %} {{stock['5y'][0]}} {% endautoescape %}
+        var stock_5y_prices = {{stock['5y'][1]}}
+        var corp_name = {% autoescape off %} {{corp_name}} {% endautoescape %}
+    </script>
+    <script src="{{ url_for('static', filename='assets/libs/js/details.js')}}"></script>
+    <script src="/static/assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script>
+		$('#modalBtn3').on('click', function(){
+			$('#Modal3').modal("show");
+		});
+		$('#modalBtn4').on('click', function(){
+			$('#Modal4').modal("show");
+		});
+	</script>
+</body>
+ 
+</html>

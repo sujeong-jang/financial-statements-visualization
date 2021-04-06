@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link href="/static//assets/vendor/fonts/circular-std/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static//assets/libs/css/style.css">
+    <link rel="stylesheet" href="/static//assets/vendor/fonts/fontawesome/css/fontawesome-all.css">
+    <title>Financial Analysis</title>
+</head>
+
+<body>
+    <!-- ============================================================== -->
+    <!-- main wrapper -->
+    <!-- ============================================================== -->
+    <div class="dashboard-main-wrapper">
+        <!-- ============================================================== -->
+        <!-- navbar -->
+        <!-- ============================================================== -->
+        <div class="dashboard-header">
+            <nav class="navbar navbar-expand-lg bg-white fixed-top">
+                <a class="navbar-brand" href="{{ url_for('index')}}" style="color:#1E3269">Financial Analysis</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end navbar -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- wrapper  -->
+        <!-- ============================================================== -->
+        <div class="dashboard-wrapper">
+            <div class="container-fluid  dashboard-content">
+                <!-- ============================================================== -->
+                <!-- pageheader -->
+                <!-- ============================================================== -->
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 text-center">
+                        <h2><strong>{{ corp_name }} 주요재무비율 분석</strong></h2>
+                    </div>
+                </div>
+
+                    <div class="row" style="margin-bottom: 20px">
+                        <div style="margin: 0 auto; text-align: center;">
+                            <a href="{{url_for('stock', code=CODE) }}" class="btn btn-rounded btn-dark">주요주가지표</a>
+                            <a href="{{url_for('statements', code=CODE) }}" class="btn btn-rounded btn-dark">주요재무지표</a>
+                            <a href="{{url_for('ratio', code=CODE) }}" class="btn btn-rounded btn-dark">주요재무비율</a>
+                        </div>
+                   </div>
+                <!-- ============================================================== -->
+                <!-- end pageheader -->
+                <!-- ============================================================== -->
+                <div class="row">
+                    <!-- ============================================================== -->
+                    <!-- bar chart  -->
+                    <!-- ============================================================== -->
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header text-center"><strong>수익성 지표</strong></h5>
+                            <div class="card-body">
+                                <canvas id="chartjs_bar1"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ============================================================== -->
+                    <!-- ============================================================== -->
+                    <!-- bar chart  -->
+                    <!-- ============================================================== -->
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="card">
+                            <h5 class="card-header text-center"><strong>안정성 지표</strong></h5>
+                            <div class="card-body">
+                                <canvas id="chartjs_bar2"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ============================================================== -->
+                    <!-- end bar chart  -->
+                    <!-- ============================================================== -->
+                </div>
+                <div class="row">
+                        <!-- ============================================================== -->
+                        <!-- bordered table -->
+                        <!-- ============================================================== -->
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="card">
+                                <h5 class="card-header text-center"><strong>수익성 비율</strong></h5>
+                                <div class="card-body">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">항목
+<!--                                                <i class="fas fa-question-circle"></i>-->
+                                              <i id="modalBtn1" class="fas fa-question-circle"></i>
+                                              <!-- 회원가입 확인 Modal-->
+                                                <div class="modal fade" id="Modal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="opacity:95%">
+                                                    <div class="modal-dialog" style="max-width: 100%; width: auto; display: table" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-body" style="margin:15px">
+                                                                <h4>수익성 비율</h4>
+                                                                <p>
+                                                                ROA(총자산이익률) = (순이익/총자산) X 100, 주주자본 뿐 아니라 차입자본을 합친 총자산을 기준으로 산출되는 지표<br>
+                                                                ROE(자기자본이익률) = (순이익/자기자본) X100, 투입한 주주지분(자기자본)을 활용해 얼마만큼의 이익을 냈는지를 나타내는 대표적인 수익성 지표<br>
+                                                                매출액총이익률 = 매출총이익/매출 X100, 기업이 판매한 상품에서 얼마만큼 이윤을 남기는지를 나타내는 지표<br>
+                                                                영업이익률 = 영업이익/매출 X100, 기업이 사업에서 남긴 영업이익이 매출액 대비 얼마나되는 지 비중을 나타내는 지표
+                                                                </p>
+                                                                <button class="btn btn-rounded btn-secondary" type="button" data-dismiss="modal" style="float:right">닫기</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </th>
+                                        {% for date in DATE_LIST %}
+                                            <th scope="col">{{date}}</th>
+                                        {% endfor %}
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">ROA(총자산순이익률)</th>
+                                                    {% for roa in ROA_LIST %}
+                                                        <td>{{roa}}</td>
+                                                    {% endfor %}
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">ROE(자기자본순이익률)</th>
+                                                    {% for roe in ROE_LIST %}
+                                                        <td>{{roe}}</td>
+                                                    {% endfor %}
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">매출액총이익률</th>
+                                                    {% for profit in PROFIT_LIST %}
+                                                        <td>{{profit}}</td>
+                                                    {% endfor %}
+                                            </tr>
+                                             <tr>
+                                                <th scope="row">영업이익률</th>
+                                                    {% for oper in OPER_LIST %}
+                                                        <td>{{oper}}</td>
+                                                    {% endfor %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- ============================================================== -->
+                        <!-- end bordered table -->
+                </div>
+                <!-- bordered table -->
+                        <!-- ============================================================== -->
+                <div class="row">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="card">
+                                <h5 class="card-header text-center"><strong>안정성 비율</strong></h5>
+                                <div class="card-body">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th scope="col">항목
+                                            <i id="modalBtn2" class="fas fa-question-circle"></i>
+                                              <!-- 회원가입 확인 Modal-->
+                                                <div class="modal fade" id="Modal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" style="opacity:95%">
+                                                    <div class="modal-dialog modal-dialog-centered" style="max-width: 100%; width: auto; display: table" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-body" style="margin:15px">
+                                                                <h4>안정성 비율</h4>
+                                                                <p>
+                                                                유동비율 = 유동자산/유동부채 X100, 기업이 단기적인 빛을 잘 갚아나가고 있는가를 나타내는 재무비율<br>
+                                                                당좌비율 = 당좌자산/유동부채 X 100, 부채를 갚기위해 당장 마련할 수 있는 자금이 충분히 있는가를 나타내는 재무비율<br>
+                                                                부채비율 = 부채총계 / 자본총계 X 100(%), 타인자본의 의존도를 나타낸다. 기업의 재무 안정성을 나타내는 대표적인 재무비율<br>
+                                                                자기자본비율 = 자기자본/총자산 X100 ,총자산 중에서 자기 자본이 차지하는 비율을 나타내는 재무비율
+                                                                </p>
+                                                                <button class="btn btn-rounded btn-secondary" type="button" data-dismiss="modal" style="float:right">닫기</button>
+                                                                </div>
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                        {% for date in DATE_LIST %}
+                                            <th scope="col">{{date}}</th>
+                                        {% endfor %}
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">유동비율</th>
+                                                    {% for cur in CUR_LIST %}
+                                                        <td>{{cur}}</td>
+                                                    {% endfor %}
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">당좌비율</th>
+                                                    {% for quick in QUICK_LIST %}
+                                                        <td>{{quick}}</td>
+                                                    {% endfor %}
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">부채비율</th>
+                                                    {% for debt in DEBT_LIST %}
+                                                        <td>{{debt}}</td>
+                                                    {% endfor %}
+                                            </tr>
+                                             <tr>
+                                                <th scope="row">자기자본비율</th>
+                                                    {% for fin in FIN_LIST %}
+                                                        <td>{{fin}}</td>
+                                                    {% endfor %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <!-- ============================================================== -->
+                        <!-- end bordered table -->
+                 <!-- ============================================================== -->
+                <div class="row text-center">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+                        <div class="card">
+                            <h5 class="card-header"><strong>수익성 레이더(2020)</strong></h5>
+                            <div class="card-body">
+                                <canvas id="chartjs_radar"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-6">
+                        <div class="card">
+                            <h5 class="card-header"><strong>안정성 레이더(2020)</strong></h5>
+                            <div class="card-body">
+                                <canvas id="chartjs_radar2"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- footer -->
+        <!-- ============================================================== -->
+        <div class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                        Copyright © 2021 Subin Sujeong Hyesu
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end footer -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- end main wrapper -->
+    <!-- ============================================================== -->
+    <!-- Optional JavaScript -->
+    <script>
+        var JS_DATE_LIST = {{DATE_LIST|tojson}}
+        var JS_ROA_LIST = {{ROA_LIST|tojson}}
+        var JS_PROFIT_LIST = {{PROFIT_LIST|tojson}}
+        var JS_OPER_LIST = {{OPER_LIST|tojson}}
+        var JS_CUR_LIST = {{CUR_LIST|tojson}}
+        var JS_DEBT_LIST = {{DEBT_LIST|tojson}}
+        var JS_FIN_LIST = {{FIN_LIST|tojson}}
+        var JS_VAR_DATA = {{BAR_DATA}}
+        var JS_NAME = {{corp_name|tojson}}
+        var JS_G_RADAR_LIST = {{[OPER_LIST[4],ROE_LIST[4],PROFIT_LIST[4]]}}
+        var JS_S_RADAR_LIST = {{[CUR_LIST[4],DEBT_LIST[4],FIN_LIST[4],QUICK_LIST[4]]}}
+    </script>
+    <script>
+        if ({{CODE}} == "035720" || {{CODE}} == "035420") {
+            var G_GOOD = [30,15,40];
+            var G_BAD = [5,4,15];
+            var S_GOOD = [150,70,50,120];
+            var S_BAD = [90,250,10,80];
+        } else {
+            var G_GOOD = [10,10,40];
+            var G_BAD = [3,3,15];
+            var S_GOOD = [150,90,50,120];
+            var S_BAD = [90,250,10,80];
+        }
+    </script>
+    <style>
+        #chartdiv {
+          width: 100%;
+          height: 300px;
+        };
+    </style>
+    <script src="/static/assets/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="/static/assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="/static/assets/vendor/slimscroll/jquery.slimscroll.js"></script>
+    <script src="/static/assets/vendor/charts/charts-bundle/Chart.bundle.js"></script>
+    <script src="/static/assets/vendor/charts/charts-bundle/chartjs.js"></script>
+    <script src="/static/assets/vendor/custom-js/jquery.multi-select.html"></script>
+    <script src="/static/assets/vendor/charts/chartist-bundle/chartist.min.js"></script>
+    <script src="/static/assets/vendor/charts/chartist-bundle/Chartistjs.js"></script>
+    <script src="/static/assets/vendor/gauge/gauge.min.js"></script>
+    <script src="/static/assets/vendor/gauge/gauge.js"></script>
+    <script src="/static/assets/libs/js/main-js.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+    <script>
+		$('#modalBtn1').on('click', function(){
+			$('#Modal1').modal("show");
+		});
+		$('#modalBtn2').on('click', function(){
+			$('#Modal2').modal("show");
+		});
+	</script>
+</body>
+
+</html>

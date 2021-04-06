@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendor/bootstrap/css/bootstrap.min.css')}}">
+    <link href="{{ url_for('static', filename='assets/vendor/fonts/circular-std/style.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/libs/css/style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendor/fonts/fontawesome/css/fontawesome-all.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendor/vector-map/jqvmap.css')}}">
+    <link href="{{ url_for('static', filename='assets/vendor/jvectormap/jquery-jvectormap-2.0.2.css')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendor/charts/chartist-bundle/chartist.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendor/charts/c3charts/c3.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/vendor/charts/morris-bundle/morris.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='assets/vendor/daterangepicker/daterangepicker.css')}}" />
+
+    <!-- Swiper from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.css" />
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <title>Financial Analysis</title>
+</head>
+
+<body>
+    <!-- ============================================================== -->
+    <!-- main wrapper -->
+    <!-- ============================================================== -->
+    <div class="dashboard-main-wrapper">
+        <!-- ============================================================== -->
+        <!-- navbar -->
+        <!-- ============================================================== -->
+        <div class="dashboard-header">
+            <nav class="navbar navbar-expand-lg bg-white fixed-top">
+                <a class="navbar-brand" href="{{ url_for('index')}}" style="color:#1E3269">Financial Analysis</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end navbar -->
+        <!-- ============================================================== -->
+        <!-- ============================================================== -->
+        <!-- wrapper  -->
+        <!-- ============================================================== -->
+        <div class="dashboard-wrapper">
+            <div class="dashboard-finance">
+                <div class="container-fluid dashboard-content">
+                    <!-- ============================================================== -->
+                    <!-- 기업별 일주일 주가 데이터  -->
+                    <!-- ============================================================== -->
+                    <div class="swiper-container">
+                        <div class="swiper-wrapper">
+                            {% for corp in corplist %}
+                                <div class="swiper-slide">
+                                    <div class="card">
+                                        <h5 class="card-header">{{corp['corp_name']}}</h5>
+                                        <div class="card-body">
+                                            <div class="metric-value d-inline-block">
+                                                <h1 class="mb-1">{{prices[corp['stock_code']]}}</h1>
+                                            </div>
+                                            <div class="metric-label d-inline-block float-right text-success font-weight-bold">
+                                                <span class="icon-circle-small icon-box-xs text-success bg-success-light"><i class="fas fa-calendar-check"></i></span><span class="ml-1">{{pre_day}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body bg-light p-t-40 p-b-40">
+                                            <div id="sparkline-revenue{{corp['stock_code']}}"></div>
+                                        </div>
+                                        <div class="card-footer text-center bg-white">
+                                            <a href="{{ url_for('stock', code=corp['stock_code'])}}" class="card-link">View Details</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <!-- Add Arrows -->
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                        <!-- Add Pagination -->
+                        <div class="swiper-pagination"></div>
+                    </div>
+                    <div class="row" style="text-align:center">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" style="text-align:left">
+                            <div class="section-block" id="image-card">
+                                <h3 class="section-title">업종 분석</h3>
+                                <p>KOSPI 기준 산업별 비교</p>
+                            </div>
+                        </div>
+                        <!-- ============================================================== -->
+                        <!-- 기업 비교  -->
+                        <!-- ============================================================== -->
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="card">
+                                <h5 class="card-header">전기전자
+                                </h5>
+                                <div class="card-body">
+                                    <div class="flex-container" style="text-align:center">
+                                        <button id="bt_roe_sssk" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="당기순이익 / 자본총액">ROE</button>
+                                        <button id="bt_debt_sssk" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="부채총계 / 자본총계 X 100(%)">부채비율</button>
+                                        <button id="bt_ni_sssk" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="영업이익 + 영업외수익 - 영업외비용">당기순이익</button>
+                                        <button id="bt_atr_sssk" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="매출액 / 자산총계">총자산회전율</button>
+                                    </div>
+                                    <canvas id="ssskChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="card">
+                                <h5 class="card-header"> 서비스업
+                                </h5>
+                                <div class="card-body">
+                                    <div class="flex-container" style="text-align:center">
+                                        <button id="bt_roe_naka" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="당기순이익 / 자본총액">ROE</button>
+                                        <button id="bt_debt_naka" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="부채총계 / 자본총계 X 100(%)">부채비율</button>
+                                        <button id="bt_ni_naka" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="영업이익 + 영업외수익 - 영업외비용">당기순이익</button>
+                                        <button id="bt_atr_naka" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="매출액 / 자산총계">총자산회전율</button>
+                                    </div>
+                                    <canvas id="nakaChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="text-align:center">
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="card">
+                                <h5 class="card-header"> 의약품
+                                </h5>
+                                <div class="card-body">
+                                    <div class="flex-container" style="text-align:center">
+                                        <button id="bt_roe_sbce" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="당기순이익 / 자본총액">ROE</button>
+                                        <button id="bt_debt_sbce" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="부채총계 / 자본총계 X 100(%)">부채비율</button>
+                                        <button id="bt_ni_sbce" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="영업이익 + 영업외수익 - 영업외비용">당기순이익</button>
+                                        <button id="bt_atr_sbce" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="매출액 / 자산총계">총자산회전율</button>
+                                    </div>
+                                    <canvas id="sbceChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <div class="card">
+                                <h5 class="card-header"> 운수장비
+                                </h5>
+                                <div class="card-body">
+                                    <div class="flex-container" style="text-align:center">
+                                        <button id="bt_roe_hdki" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="당기순이익 / 자본총액">ROE</button>
+                                        <button id="bt_debt_hdki" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="부채총계 / 자본총계 X 100(%)">부채비율</button>
+                                        <button id="bt_ni_hdki" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="영업이익 + 영업외수익 - 영업외비용">당기순이익</button>
+                                        <button id="bt_atr_hdki" class="btn btn-outline-light" data-toggle="tooltip" data-placement="top" title="매출액 / 자산총계">총자산회전율</button>
+                                    </div>
+                                    <canvas id="hdkiChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- footer -->
+        <!-- ============================================================== -->
+        <div class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                        Copyright © 2021 Subin Sujeong Hyesu
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end footer -->
+        <!-- ============================================================== -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- end main wrapper  -->
+    <!-- ============================================================== -->
+    <!-- jquery 3.3.1  -->
+    <script src="{{ url_for('static', filename='assets/vendor/jquery/jquery-3.3.1.min.js')}}"></script>
+    <!-- bootstap bundle js -->
+    <script src="{{ url_for('static', filename='assets/vendor/bootstrap/js/bootstrap.bundle.js')}}"></script>
+    <!-- slimscroll js -->
+    <script src="{{ url_for('static', filename='assets/vendor/slimscroll/jquery.slimscroll.js')}}"></script>
+    <!-- chart chartist js -->
+    <script src="{{ url_for('static', filename='assets/vendor/charts/chartist-bundle/chartist.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='assets/vendor/charts/chartist-bundle/Chartistjs.js')}}"></script>
+    <script src="{{ url_for('static', filename='assets/vendor/charts/chartist-bundle/chartist-plugin-threshold.js')}}"></script>
+    <!-- chart C3 js -->
+    <script src="{{ url_for('static', filename='assets/vendor/charts/c3charts/c3.min.js')}}"></script>
+    <script src="{{ url_for('static', filename='assets/vendor/charts/c3charts/d3-5.4.0.min.js')}}"></script>
+    <!-- chartjs js -->
+    <script src="{{ url_for('static', filename='assets/vendor/charts/charts-bundle/Chart.bundle.js')}}"></script>
+    <script src="{{ url_for('static', filename='assets/vendor/charts/charts-bundle/chartjs.js')}}"></script>
+    <!-- sparkline js -->
+    <script src="{{ url_for('static', filename='assets/vendor/charts/sparkline/jquery.sparkline.js')}}"></script>
+    <!-- dashboard finance&ecommerce js -->
+    <script>
+        var week_data = {{weekdatas}}
+        var roa = {% autoescape off %} {{roa}} {% endautoescape %}
+        var debt = {% autoescape off %} {{debt}} {% endautoescape %}
+        var ni = {% autoescape off %} {{ni}} {% endautoescape %}
+        var atr = {% autoescape off %} {{atr}} {% endautoescape %}
+        var yearlist = ['2016','2017','2018','2019','2020']
+    </script>
+    <script src="{{ url_for('static', filename='assets/libs/js/main.js')}}"></script>
+    <script src="{{ url_for('static', filename='assets/libs/js/dashboard-ecommerce.js') }}"></script>
+    <!-- main js -->
+    <script src="{{ url_for('static', filename='assets/libs/js/main-js.js')}}"></script>
+    <!-- gauge js -->
+    <script src="{{ url_for('static', filename='assets/vendor/gauge/gauge.min.js')}}"></script>
+
+    <!-- Swiper from CDN -->
+    <script src="https://unpkg.com/swiper/swiper-bundle.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <!-- Initialize Swiper & tooltip -->
+    <script>
+    var swiper = new Swiper('.swiper-container', {
+      slidesPerView: 4,
+      spaceBetween: 30,
+      slidesPerGroup: 4,
+      loop: true,
+      loopFillGroupWithBlank: true,
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    });
+
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+    </script>
+</body>
+</html>

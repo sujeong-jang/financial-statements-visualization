@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/assets/vendor/bootstrap/css/bootstrap.min.css">
+    <link href="/static//assets/vendor/fonts/circular-std/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static//assets/libs/css/style.css">
+    <link rel="stylesheet" href="/static//assets/vendor/fonts/fontawesome/css/fontawesome-all.css">
+    <title>Financial Analysis</title>
+</head>
+
+<body>
+    <!-- ============================================================== -->
+    <!-- main wrapper -->
+    <!-- ============================================================== -->
+    <div class="dashboard-main-wrapper">
+        <!-- ============================================================== -->
+        <!-- navbar -->
+        <!-- ============================================================== -->
+        <div class="dashboard-header">
+            <nav class="navbar navbar-expand-lg bg-white fixed-top">
+                <a class="navbar-brand" href="{{ url_for('index')}}" style="color:#1E3269">Financial Analysis</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </nav>
+        </div>
+        <!-- ============================================================== -->
+        <!-- end navbar -->
+        <!-- ============================================================== -->
+        <!-- wrapper  -->
+        <!-- ============================================================== -->
+        <div class="dashboard-wrapper">
+            <div class="container-fluid  dashboard-content">
+                <!-- ============================================================== -->
+                <!-- pageheader -->
+                <!-- ============================================================== -->
+                <div class="row">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 text-center">
+                        <h2><strong>{{ corp_name }} 주가 분석</strong></h2>
+                    </div>
+                </div>
+
+                    <div class="row" style="margin-bottom: 20px">
+                        <div style="margin: 0 auto; text-align: center;">
+                            <a href="{{url_for('stock', code=CODE) }}" class="btn btn-rounded btn-dark">주요주가지표</a>
+                            <a href="{{url_for('statements', code=CODE) }}" class="btn btn-rounded btn-dark">주요재무지표</a>
+                            <a href="{{url_for('ratio', code=CODE) }}" class="btn btn-rounded btn-dark">주요재무비율</a>
+                        </div>
+                   </div>
+                <!-- ============================================================== -->
+                <!-- end pageheader -->
+                <div class="row">
+                    <!-- ============================================================== -->
+                    <!-- line chart  -->
+                    <!-- ============================================================== -->
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="flex-container" style="text-align:center">
+                                    <button id="3m" class="btn btn-outline-light">3개월</button>
+                                    <button id="6m" class="btn btn-outline-light">6개월</button>
+                                    <button id="1y" class="btn btn-outline-light">1년</button>
+                                    <button id="3y" class="btn btn-outline-light">3년</button>
+                                    <button id="5y" class="btn btn-outline-light">5년</button>
+                                </div>
+                                <div class="chart-container" style="position: relative; height:50vh">
+                                    <canvas id="stock_chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- ============================================================== -->
+                    <!-- end line chart  -->
+                    <!-- ============================================================== -->
+                </div>
+                 <!-- ============================================================== -->
+                <!--  consensus  -->
+                    <div class="card">
+                    <h5 class="card-header text-center"><strong>투자의견 컨센서스</strong></h5>
+                    <div id="chartdiv"></div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                            {% for title in TITLE_LIST %}
+                                <th scope="col"><strong>{{title}}</strong></th>
+                            {% endfor %}
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {% for opi in OPI_LIST %}
+                                        <td>{{opi}}</td>
+                                    {% endfor %}
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- ============================================================== -->
+                <!--  end consensus -->
+                <!-- ============================================================== -->
+
+                </div>
+
+
+
+
+            </div>
+            <!-- ============================================================== -->
+            <!-- footer -->
+            <!-- ============================================================== -->
+            <div class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-xl-6 col-lg-6 col-md-12 col-sm-12 col-12">
+                            Copyright © 2021 Subin Sujeong Hyesu
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- end footer -->
+            <!-- ============================================================== -->
+        </div>
+    </div>
+    <!-- ============================================================== -->
+    <!-- end main wrapper -->
+    <!-- ============================================================== -->
+    <!-- Optional JavaScript -->
+    <script>
+        var JS_VAR_DATA = {{BAR_DATA}}
+        var corp_name = {{corp_name|tojson}}
+    </script>
+    <style>
+        #chartdiv {
+          width: 100%;
+          height: 300px;
+        }
+    </style>
+    <script src="/static/assets/vendor/jquery/jquery-3.3.1.min.js"></script>
+    <script src="/static/assets/vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="/static/assets/vendor/slimscroll/jquery.slimscroll.js"></script>
+    <script src="/static/assets/vendor/charts/charts-bundle/Chart.bundle.js"></script>
+    <script src="/static/assets/vendor/charts/charts-bundle/chartjs.js"></script>
+    <script src="/static/assets/vendor/custom-js/jquery.multi-select.html"></script>
+    <script src="/static/assets/vendor/charts/chartist-bundle/chartist.min.js"></script>
+    <script src="/static/assets/vendor/charts/chartist-bundle/Chartistjs.js"></script>
+    <script src="/static/assets/vendor/gauge/gauge.min.js"></script>
+    <script src="/static/assets/vendor/gauge/gauge.js"></script>
+    <script src="/static/assets/libs/js/main-js.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+    <script>
+        var stock_3m_date = {% autoescape off %} {{stock['3m'][0]}} {% endautoescape %}
+        var stock_3m_prices = {{stock['3m'][1]}}
+        var stock_6m_date = {% autoescape off %} {{stock['6m'][0]}} {% endautoescape %}
+        var stock_6m_prices = {{stock['6m'][1]}}
+        var stock_1y_date = {% autoescape off %} {{stock['1y'][0]}} {% endautoescape %}
+        var stock_1y_prices = {{stock['1y'][1]}}
+        var stock_3y_date = {% autoescape off %} {{stock['3y'][0]}} {% endautoescape %}
+        var stock_3y_prices = {{stock['3y'][1]}}
+        var stock_5y_date = {% autoescape off %} {{stock['5y'][0]}} {% endautoescape %}
+        var stock_5y_prices = {{stock['5y'][1]}}
+        var corp_name = {% autoescape off %} {{corp_name}} {% endautoescape %}
+    </script>
+    <script src="{{ url_for('static', filename='assets/libs/js/details.js')}}"></script>
+</body>
+</html>
